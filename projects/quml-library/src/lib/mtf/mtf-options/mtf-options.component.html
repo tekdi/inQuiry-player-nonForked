@@ -1,0 +1,11 @@
+<ng-conatiner *ngIf="optionsShuffled">
+    <div id="leftSide">
+        <div *ngFor="let option of options.left" class="option-box" [innerHTML]="option.label"></div>
+    </div>
+
+    <div id="rightSide" cdkDropList (cdkDropListDropped)="onDrop($event)">
+        <div *ngFor="let option of options.right; let i = index" cdkDrag [innerHTML]="option.label"
+            [cdkDragData]="option" cdkDragBoundary="#rightSide" class="option-box">
+        </div>
+    </div>
+</ng-conatiner>

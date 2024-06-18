@@ -1,0 +1,8 @@
+<div *ngIf="questionBody" class="question-body">
+  <div class="mtf-title">
+    <p [innerHTML]="questionBody"></p>
+  </div>
+  <quml-mtf-options *ngIf="interactions?.response1?.options" [options]="interactions.response1.options"
+    (reorderedOptions)="handleReorderedOptions($event)">
+  </quml-mtf-options>
+</div>

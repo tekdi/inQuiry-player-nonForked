@@ -1,0 +1,27 @@
+#leftSide {
+    float: left;
+    width: 50%;
+}
+
+#leftSide div {
+    border: 2px solid black;
+    margin: 5px;
+    padding: 10px;
+    background-color: whitesmoke;
+    color: black;
+    font-weight: bold;
+}
+
+#rightSide {
+    float: right;
+    width: 50%;
+}
+
+#rightSide div {
+    border: 2px solid black;
+    margin: 5px;
+    padding: 10px;
+    background-color: whitesmoke;
+    color: black;
+    font-weight: bold;
+}
