@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash-es';
 import { DEFAULT_SCORE } from './player-constants'
+import { MtfOptions } from './interfaces/mtf-interface';
 
 @Injectable({
     providedIn: 'root'
@@ -57,6 +58,32 @@ export class UtilService {
             });
             return sum;
         }
+    }
+
+    public getMTFScore(questionData: any, rearrangedOptions: MtfOptions) {
+        const correctResponse = questionData.responseDeclaration.response1.correctResponse.value;
+        const mapping = questionData.responseDeclaration.response1.mapping;
+
+        const currentResponse = rearrangedOptions.right.map((rightItem: any) => {
+            const leftIndex = rearrangedOptions.left.findIndex((leftItem: any) => leftItem.value === rightItem.value);
+            return { lhs: leftIndex, rhs: rearrangedOptions.right.indexOf(rightItem) };
+        });
+
+        let totalScore = 0;
+        currentResponse.forEach((currentPair) => {
+            const correctPair = correctResponse.find((correct) =>
+                correct.lhs === currentPair.lhs && correct.rhs === currentPair.rhs
+            );
+            if (correctPair) {
+                const scoreMapping = mapping.find((map) =>
+                    map.value.lhs === currentPair.lhs && map.value.rhs === currentPair.rhs
+                );
+                if (scoreMapping) {
+                    totalScore += scoreMapping.score;
+                }
+            }
+        });
+        return totalScore;
     }
 
     hasDuplicates(selectedOptions, option) {

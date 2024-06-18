@@ -5,6 +5,7 @@ import { CarouselComponent } from 'ngx-bootstrap/carousel';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { QumlPlayerConfig, IParentConfig, IAttempts } from '../quml-library-interface';
+import { MtfOptions } from '../interfaces/mtf-interface';
 import { ViewerService } from '../services/viewer-service/viewer-service';
 import { eventName, pageId, TelemetryType, Cardinality, QuestionType } from '../telemetry-constants';
 import { DEFAULT_SCORE, COMPATABILITY_LEVEL } from '../player-constants';
@@ -75,6 +76,7 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
   currentSolutions: any;
   showSolution: any;
   optionSelectedObj: any;
+  mtfReorderedOptionsMap: any;
   intervalRef: any;
   alertType: string;
   infoPopup: boolean;
@@ -381,6 +383,7 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
     this.active = false;
     this.showAlert = false;
     this.optionSelectedObj = undefined;
+    this.mtfReorderedOptionsMap = undefined;
     this.currentOptionSelected = undefined;
     this.currentQuestion = undefined;
     this.currentOptions = undefined;
@@ -549,6 +552,24 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
     if (!this.showFeedBack) {
       this.validateSelectedOption(this.optionSelectedObj);
     }
+  }
+
+  handleMTFOptionsChange(rearrangedOptions: MtfOptions) {
+    console.log('MTF rearrangedOptions', rearrangedOptions);
+    this.focusOnNextButton();
+    this.active = true;
+    const currentIndex = this.myCarousel.getCurrentSlideIndex() - 1;
+    if (_.isEmpty(rearrangedOptions)) {
+      this.updateScoreBoard(currentIndex, 'skipped');
+    } else {
+      // calculate score
+      const currentScore = this.utilService.getMTFScore(this.questions[currentIndex], rearrangedOptions);
+      console.log("mtf score", currentScore)
+      this.updateScoreBoard(currentIndex, 'correct', undefined, currentScore);
+      this.mtfReorderedOptionsMap = rearrangedOptions;
+    }
+    this.currentQuestionIndetifier = this.questions[currentIndex].identifier;
+    this.media = _.get(this.questions[currentIndex], 'media', []);
   }
 
   durationEnds() {
@@ -765,6 +786,7 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
     this.showRootInstruction = false;
     if (index === 0) {
       this.optionSelectedObj = undefined;
+      this.mtfReorderedOptionsMap = undefined;
       this.myCarousel.selectSlide(0);
       this.active = this.currentSlideIndex === 0 && this.sectionIndex === 0 && this.showStartPage;
       this.showRootInstruction = true;
