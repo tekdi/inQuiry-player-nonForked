@@ -1,4 +1,4 @@
-<ng-conatiner *ngIf="optionsShuffled">
+<ng-container *ngIf="optionsShuffled">
     <div id="leftSide">
         <div *ngFor="let option of options.left" class="option-box" [innerHTML]="option.label"></div>
     </div>
@@ -8,4 +8,4 @@
             [cdkDragData]="option" cdkDragBoundary="#rightSide" class="option-box">
         </div>
     </div>
-</ng-conatiner>
+</ng-container>
