@@ -51,5 +51,6 @@ export enum Cardinality {
 
 export enum QuestionType {
     mcq = 'MCQ',
-    sa = 'SA'
+    sa = 'SA',
+    mtf = 'MTF'
 }

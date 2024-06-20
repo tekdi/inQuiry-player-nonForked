@@ -563,7 +563,15 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
       this.updateScoreBoard(currentIndex, 'skipped');
     } else {
       // calculate score
+      const currentQuestion = this.questions[currentIndex];
+      this.currentSolutions = !_.isEmpty(currentQuestion.solutions) ? currentQuestion.solutions : undefined;
       const currentScore = this.utilService.getMTFScore(this.questions[currentIndex], rearrangedOptions);
+      if (currentScore > 0) {
+        this.alertType = 'correct';
+      } else {
+        this.alertType = 'wrong';
+      }
+      this.showAlert = true;
       console.log("mtf score", currentScore)
       this.updateScoreBoard(currentIndex, 'correct', undefined, currentScore);
       this.mtfReorderedOptionsMap = rearrangedOptions;
@@ -647,9 +655,10 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
   validateSelectedOption(option, type?: string) {
     const selectedOptionValue = option?.option?.value;
     const currentIndex = this.myCarousel.getCurrentSlideIndex() - 1;
-    const isQuestionSkipAllowed = !this.optionSelectedObj &&
-      this.allowSkip && this.utilService.getQuestionType(this.questions, currentIndex) === QuestionType.mcq;
-    const isSubjectiveQuestion = this.utilService.getQuestionType(this.questions, currentIndex) === QuestionType.sa;
+    const currentQuestionType = this.utilService.getQuestionType(this.questions, currentIndex);
+    const isQuestionSkipAllowed = this.allowSkip && (!this.optionSelectedObj &&
+       currentQuestionType === QuestionType.mcq) || (!this.mtfReorderedOptionsMap && currentQuestionType === QuestionType.mtf);
+    const isSubjectiveQuestion = currentQuestionType === QuestionType.sa;
     const onStartPage = this.startPageInstruction && this.myCarousel.getCurrentSlideIndex() === 0;
     const isActive = !this.optionSelectedObj && this.active;
     const selectedQuestion = this.questions[currentIndex];
@@ -744,11 +753,11 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
         this.nextSlide();
       }
     } else if (this.startPageInstruction && !this.optionSelectedObj && !this.active && !this.allowSkip &&
-      this.myCarousel.getCurrentSlideIndex() > 0 && this.utilService.getQuestionType(this.questions, currentIndex) === QuestionType.mcq
+      this.myCarousel.getCurrentSlideIndex() > 0 && currentQuestionType === QuestionType.mcq
       && this.utilService.canGo(this.progressBarClass[this.myCarousel.getCurrentSlideIndex()])) {
       this.infoPopupTimeOut();
     } else if (!this.optionSelectedObj && !this.active && !this.allowSkip && this.myCarousel.getCurrentSlideIndex() >= 0
-      && this.utilService.getQuestionType(this.questions, currentIndex) === QuestionType.mcq
+      && currentQuestionType === QuestionType.mcq
       && this.utilService.canGo(this.progressBarClass[this.myCarousel.getCurrentSlideIndex()])) {
       this.infoPopupTimeOut();
     }

@@ -25,3 +25,43 @@
     color: black;
     font-weight: bold;
 }
+
+.option-box {
+    cursor: move;
+}
+
+#topSide {
+    width: 1000px;
+    max-width: 100%;
+    min-height: 60px;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+#topSide div {
+    border: 2px solid black;
+    min-width: 25%;
+    padding: 10px;
+    background-color: whitesmoke;
+    color: black;
+    font-weight: bold;
+}
+
+#bottomSide {
+    width: 1000px;
+    max-width: 100%;
+    min-height: 60px;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+#bottomSide div {
+    border: 2px solid black;
+    min-width: 25%;
+    padding: 10px;
+    background-color: whitesmoke;
+    color: black;
+    font-weight: bold;
+}

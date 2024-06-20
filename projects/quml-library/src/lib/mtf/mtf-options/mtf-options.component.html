@@ -1,11 +1,21 @@
-<ng-container *ngIf="optionsShuffled">
+<ng-container *ngIf="optionsShuffled && (layout === 'VERTICAL' || layout === 'DEFAULT')">
     <div id="leftSide">
-        <div *ngFor="let option of options.left" class="option-box" [innerHTML]="option.label"></div>
+        <div *ngFor="let option of shuffledOptions.left" [innerHTML]="option.label"></div>
     </div>
-
     <div id="rightSide" cdkDropList (cdkDropListDropped)="onDrop($event)">
-        <div *ngFor="let option of options.right; let i = index" cdkDrag [innerHTML]="option.label"
+        <div *ngFor="let option of shuffledOptions.right; let i = index" cdkDrag [innerHTML]="option.label"
             [cdkDragData]="option" cdkDragBoundary="#rightSide" class="option-box">
+        </div>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="optionsShuffled && layout === 'HORIZONTAL'">
+    <div id="topSide">
+        <div *ngFor="let option of shuffledOptions.left" [innerHTML]="option.label"></div>
+    </div>
+    <div id="bottomSide" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="onDrop($event)">
+        <div *ngFor="let option of shuffledOptions.right; let i = index" cdkDrag [innerHTML]="option.label"
+            [cdkDragData]="option" cdkDragBoundary="#bottomSide" class="option-box">
         </div>
     </div>
 </ng-container>

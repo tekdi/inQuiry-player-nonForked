@@ -9,22 +9,36 @@ import { mtfQuestionMetadata } from './mtf.data';
 })
 export class MtfComponent implements OnInit {
   @Input() questionMetadata?: any;
+  @Input() shuffleOptions: boolean;
   @Output() optionsReordered = new EventEmitter<MtfOptions>();
 
   public interactions?: MtfInteractions;
   public questionBody?: string;
+  public layout: 'VERTICAL' | 'HORIZONTAL' | 'DEFAULT';
 
   ngOnInit(): void {
-    this.questionMetadata = mtfQuestionMetadata; // remove the line during integration testing when the actual question data comes from list API call
-    this.interactions = this.questionMetadata?.interactions;
-    this.questionBody = this.questionMetadata?.body;
-    console.log('MTF interactions', this.interactions);
-    console.log('MTF questionBody', this.questionBody);
+    this.initialize();
   }
 
-  handleReorderedOptions(newOptions: MtfOptions) {
-    // Handle the new options
-    console.log('MTF Reordered Options:', newOptions);
-    this.optionsReordered.emit(newOptions);
+  private initialize(): void {
+    this.setLayout();
+    this.interactions = this.questionMetadata?.interactions;
+    this.questionBody = this.questionMetadata?.body;
+  }
+
+  private setLayout(): void {
+    const templateId = this.questionMetadata?.templateId;
+    if (templateId === 'mtf-vertical') {
+      this.layout = 'VERTICAL';
+    } else if (templateId === 'mtf-horizontal') {
+      this.layout = 'HORIZONTAL';
+    } else {
+      console.error('Invalid or undefined templateId');
+      this.layout = 'DEFAULT';
+    }
+  }
+
+  public handleReorderedOptions(reorderedOptions: MtfOptions) {
+    this.optionsReordered.emit(reorderedOptions);
   }
 }
