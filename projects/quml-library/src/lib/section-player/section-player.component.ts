@@ -654,8 +654,8 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
     this.slideDuration = Math.round((new Date().getTime() - this.initialSlideDuration) / 1000);
 
     const edataItem: any = this.utilService.getEDataItem(selectedQuestion, responseKey);
-    if (edataItem && this.parentConfig.isSectionsAvailable) {
-      edataItem.sectionId = this.sectionConfig.metadata.identifier;
+    if (edataItem && this.parentConfig?.isSectionsAvailable) {
+      edataItem['sectionId'] = this.sectionConfig?.metadata?.identifier;
     }
 
     const questionType = this.questions[currentIndex]['qType'];
@@ -672,8 +672,10 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
     if (questionType === QuestionType.sa) {
         return true;
     }
-    if ((questionType === QuestionType.mtf && !this.mtfReorderedOptionsMap) ||
-        (questionType === QuestionType.mcq && !this.optionSelectedObj) && this.allowSkip) {
+    if (
+      (questionType === QuestionType.mtf && !this.mtfReorderedOptionsMap) ||
+      ((questionType === QuestionType.mcq || questionType === QuestionType.mmcq) && !this.optionSelectedObj) &&
+      this.allowSkip) {
         return true;
     }
     return false;
