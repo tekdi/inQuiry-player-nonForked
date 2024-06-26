@@ -8,7 +8,7 @@ import { mtfQuestionMetadata } from './mtf.data';
   styleUrls: ['./mtf.component.scss']
 })
 export class MtfComponent implements OnInit {
-  @Input() questionMetadata?: any;
+  @Input() question?: any;
   @Input() shuffleOptions: boolean;
   @Output() optionsReordered = new EventEmitter<MtfOptions>();
 
@@ -22,12 +22,12 @@ export class MtfComponent implements OnInit {
 
   private initialize(): void {
     this.setLayout();
-    this.interactions = this.questionMetadata?.interactions;
-    this.questionBody = this.questionMetadata?.body;
+    this.interactions = this.question?.interactions;
+    this.questionBody = this.question?.body;
   }
 
   private setLayout(): void {
-    const templateId = this.questionMetadata?.templateId;
+    const templateId = this.question?.templateId;
     if (templateId === 'mtf-vertical') {
       this.layout = 'VERTICAL';
     } else if (templateId === 'mtf-horizontal') {

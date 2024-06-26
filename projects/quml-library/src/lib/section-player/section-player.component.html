@@ -43,7 +43,7 @@
                 </quml-sa>
               </div>
               <div *ngIf="question?.primaryCategory.toLowerCase() === 'match the following question'" class="mtf">
-                <quml-mtf [shuffleOptions]='shuffleOptions' [questionMetadata]='question' (optionsReordered)="handleMTFOptionsChange($event)"></quml-mtf>
+                <quml-mtf [shuffleOptions]='shuffleOptions' [question]='question' (optionsReordered)="handleMTFOptionsChange($event)"></quml-mtf>
               </div>
             </div>
           </slide>
