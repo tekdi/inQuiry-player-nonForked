@@ -2,7 +2,12 @@
   <div class="mtf-title">
     <p [innerHTML]="questionBody"></p>
   </div>
-  <quml-mtf-options [shuffleOptions]="shuffleOptions" *ngIf="interactions?.response1?.options"
-    [options]="interactions.response1.options" (reorderedOptions)="handleReorderedOptions($event)" [layout]="layout">
+  <quml-mtf-options
+    [shuffleOptions]="shuffleOptions"
+    *ngIf="interactions?.response1?.options"
+    [options]="interactions.response1.options"
+    (reorderedOptions)="handleReorderedOptions($event)"
+    [layout]="layout"
+  >
   </quml-mtf-options>
 </div>

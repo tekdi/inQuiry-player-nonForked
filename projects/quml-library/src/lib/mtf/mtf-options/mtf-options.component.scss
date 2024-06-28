@@ -1,67 +1,82 @@
+.main-div {
+  background: #f9a817;
+  display: flex;
+  width: 100%;
+}
 #leftSide {
-    float: left;
-    width: 50%;
+  flex-basis: 50%;
+}
+.left-option-container {
+  position: relative;
 }
 
-#leftSide div {
-    border: 2px solid black;
-    margin: 5px;
-    padding: 10px;
-    background-color: whitesmoke;
-    color: black;
-    font-weight: bold;
+#leftSide img {
+  width: 100%;
+}
+
+.option-label1 {
+  position: absolute;
+  top: 50%;
+  left: 15%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.7);
+}
+.option-label2 {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 #rightSide {
-    float: right;
-    width: 50%;
+  flex-basis: 50%;
 }
-
-#rightSide div {
-    border: 2px solid black;
-    margin: 5px;
-    padding: 10px;
-    background-color: whitesmoke;
-    color: black;
-    font-weight: bold;
+.right-option-container {
+  position: relative;
+}
+#rightSide img {
+  width: 100%;
+  margin-left: -6%;
+  margin-top: 2.5px;
 }
 
 .option-box {
-    cursor: move;
+  cursor: move;
 }
 
 #topSide {
-    width: 1000px;
-    max-width: 100%;
-    min-height: 60px;
-    display: flex;
-    flex-direction: row;
-    overflow: hidden;
+  width: 1000px;
+  max-width: 100%;
+  min-height: 60px;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
 }
 
 #topSide div {
-    border: 2px solid black;
-    min-width: 25%;
-    padding: 10px;
-    background-color: whitesmoke;
-    color: black;
-    font-weight: bold;
+  border: 2px solid black;
+  min-width: 25%;
+  padding: 10px;
+  background-color: whitesmoke;
+  color: black;
+  font-weight: bold;
 }
 
 #bottomSide {
-    width: 1000px;
-    max-width: 100%;
-    min-height: 60px;
-    display: flex;
-    flex-direction: row;
-    overflow: hidden;
+  width: 1000px;
+  max-width: 100%;
+  min-height: 60px;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
 }
 
 #bottomSide div {
-    border: 2px solid black;
-    min-width: 25%;
-    padding: 10px;
-    background-color: whitesmoke;
-    color: black;
-    font-weight: bold;
+  border: 2px solid black;
+  min-width: 25%;
+  padding: 10px;
+  background-color: whitesmoke;
+  color: black;
+  font-weight: bold;
 }
