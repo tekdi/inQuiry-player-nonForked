@@ -23,35 +23,53 @@
         [cdkDragData]="option"
         cdkDragBoundary="#rightSide"
       >
-        <img
-          src="https://sunbirdsaas.com/content-plugins/org.ekstep.questionunit.mtf-1.2/renderer/assets/shape4.png"
-        />
-        <div [innerHTML]="option.label" class="option-label2 option-box"></div>
+        <div class="drag-content">
+          <img
+            src="https://sunbirdsaas.com/content-plugins/org.ekstep.questionunit.mtf-1.2/renderer/assets/shape4.png"
+          />
+          <div [innerHTML]="option.label" class="option-label2"></div>
+        </div>
       </div>
     </div>
   </div>
 </ng-container>
 
 <ng-container *ngIf="optionsShuffled && layout === 'HORIZONTAL'">
-  <div id="topSide">
+  <div class="horizontal-main">
+    <div id="topSide">
+      <div
+        *ngFor="let option of shuffledOptions.left; let i = index"
+        class="top-option-container"
+      >
+        <img
+          src="https://sunbirdsaas.com/content-plugins/org.ekstep.questionunit.mtf-1.2/renderer/assets/shape1.png"
+          alt="Option Image"
+        />
+        <div [innerHTML]="option.label" class="option-label3"></div>
+      </div>
+    </div>
     <div
-      *ngFor="let option of shuffledOptions.left"
-      [innerHTML]="option.label"
-    ></div>
-  </div>
-  <div
-    id="bottomSide"
-    cdkDropList
-    cdkDropListOrientation="horizontal"
-    (cdkDropListDropped)="onDrop($event)"
-  >
-    <div
-      *ngFor="let option of shuffledOptions.right; let i = index"
-      cdkDrag
-      [innerHTML]="option.label"
-      [cdkDragData]="option"
-      cdkDragBoundary="#bottomSide"
-      class="option-box"
-    ></div>
+      id="bottomSide"
+      cdkDropList
+      cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="onDrop($event)"
+    >
+      <div
+        *ngFor="let option of shuffledOptions.right; let i = index"
+        class="bottom-option-container"
+      >
+        <img
+          src="https://sunbirdsaas.com/content-plugins/org.ekstep.questionunit.mtf-1.2/renderer/assets/shape2.png"
+          alt="Option Image"
+        />
+        <div
+          cdkDrag
+          [innerHTML]="option.label"
+          [cdkDragData]="option"
+          cdkDragBoundary="#bottomSide"
+          class="option-label4"
+        ></div>
+      </div>
+    </div>
   </div>
 </ng-container>

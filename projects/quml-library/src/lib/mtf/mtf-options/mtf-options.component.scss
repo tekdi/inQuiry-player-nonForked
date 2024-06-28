@@ -2,6 +2,7 @@
   background: #f9a817;
   display: flex;
   width: 100%;
+  padding: 20px;
 }
 #leftSide {
   flex-basis: 50%;
@@ -34,38 +35,50 @@
 }
 .right-option-container {
   position: relative;
+  align-items: center;
+  cursor: move;
 }
 #rightSide img {
   width: 100%;
   margin-left: -6%;
   margin-top: 2.5px;
 }
-
-.option-box {
-  cursor: move;
+.drag-content {
+  display: flex;
+  align-items: center;
 }
-
+.horizontal-main {
+  background: #eee;
+  width: 100%;
+  padding: 20px;
+}
 #topSide {
-  width: 1000px;
-  max-width: 100%;
   min-height: 60px;
   display: flex;
   flex-direction: row;
   overflow: hidden;
 }
-
-#topSide div {
-  border: 2px solid black;
-  min-width: 25%;
-  padding: 10px;
-  background-color: whitesmoke;
-  color: black;
+.top-option-container {
+  position: relative;
+}
+.top-option-container .option-label3 {
   font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 42%;
+}
+.bottom-option-container {
+  position: relative;
+  cursor: move;
+}
+.bottom-option-container .option-label4 {
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 42%;
 }
 
 #bottomSide {
-  width: 1000px;
-  max-width: 100%;
   min-height: 60px;
   display: flex;
   flex-direction: row;
@@ -73,10 +86,5 @@
 }
 
 #bottomSide div {
-  border: 2px solid black;
-  min-width: 25%;
-  padding: 10px;
-  background-color: whitesmoke;
-  color: black;
   font-weight: bold;
 }
