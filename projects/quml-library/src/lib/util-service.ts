@@ -79,27 +79,28 @@ export class UtilService {
         const correctResponse = responseDeclaration[key]['correctResponse']['value'];
         const mapping = responseDeclaration[key]['mapping'];
         if (isShuffleQuestions) {
-            const scoreForEachMapping = _.round(DEFAULT_SCORE/mapping.length, 2);
+            const scoreForEachMapping = _.round(DEFAULT_SCORE / mapping.length, 2);
             _.forEach(mapping, (map) => {
                 map.score = scoreForEachMapping;
-            })
+            });
         }
+
         const currentResponse = rearrangedOptions.right.map((rightItem: any) => {
             const leftIndex = rearrangedOptions.left.findIndex((leftItem: any) => leftItem.value === rightItem.value);
-            return { lhs: leftIndex, rhs: rearrangedOptions.right.indexOf(rightItem) };
+            return { left: leftIndex, right: rearrangedOptions.right.indexOf(rightItem) };
         });
 
         let totalScore = 0;
         currentResponse.forEach((currentPair) => {
             const correctPair = correctResponse.find((correct) =>
-                correct.lhs === currentPair.lhs && correct.rhs === currentPair.rhs
+                correct.left === currentPair.left && correct.right.includes(currentPair.right)
             );
             if (correctPair) {
                 const scoreMapping = mapping.find((map) =>
-                    map.value.lhs === currentPair.lhs && map.value.rhs === currentPair.rhs
+                    map.value.left === currentPair.left && map.value.right === currentPair.right
                 );
                 if (scoreMapping) {
-                    totalScore += (scoreMapping?.score ? scoreMapping?.score : 0) ;
+                    totalScore += (scoreMapping?.score ? scoreMapping?.score : 0);
                 }
             }
         });

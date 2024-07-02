@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MtfInteractions, MtfOptions } from '../interfaces/mtf-interface';
-import { mtfQuestionMetadata } from './mtf.data';
 
 @Component({
   selector: 'quml-mtf',
