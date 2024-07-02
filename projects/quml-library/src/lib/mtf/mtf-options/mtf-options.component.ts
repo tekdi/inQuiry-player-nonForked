@@ -1,17 +1,17 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { MtfOptions } from '../../interfaces/mtf-interface';
 import * as _ from 'lodash-es';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-
 @Component({
   selector: 'quml-mtf-options',
   templateUrl: './mtf-options.component.html',
   styleUrls: ['./mtf-options.component.scss']
 })
-export class MtfOptionsComponent implements OnInit {
+export class MtfOptionsComponent implements OnInit, OnChanges {
   @Input() options: { left: any[], right: any[] };
   @Input() layout: string;
-  @Input() shuffleOptions: boolean
+  @Input() shuffleOptions: boolean;
+  @Input() replayed: boolean;
+  @Input() tryAgain?: boolean;
   @Output() reorderedOptions = new EventEmitter<MtfOptions>();
   shuffledOptions: { left: any[], right: any[] };
   optionsShuffled = false;
@@ -22,6 +22,12 @@ export class MtfOptionsComponent implements OnInit {
 
   ngOnInit() {
     this.shuffleMTFOptions();
+  }
+
+  ngOnChanges(): void {
+    if(this.replayed || this.tryAgain) {
+      this.shuffleMTFOptions();
+    }
   }
 
   shuffleAndCheck(array: any[]): any[] {

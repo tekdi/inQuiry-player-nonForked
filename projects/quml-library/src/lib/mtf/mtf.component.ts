@@ -10,6 +10,8 @@ import { mtfQuestionMetadata } from './mtf.data';
 export class MtfComponent implements OnInit {
   @Input() question?: any;
   @Input() shuffleOptions: boolean;
+  @Input() replayed: boolean;
+  @Input() tryAgain?: boolean;
   @Output() optionsReordered = new EventEmitter<MtfOptions>();
 
   public interactions?: MtfInteractions;
