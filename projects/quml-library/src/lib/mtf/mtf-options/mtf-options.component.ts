@@ -1,27 +1,46 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MtfOptions } from '../../interfaces/mtf-interface';
-import * as _ from 'lodash-es';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { MtfOptions } from "../../interfaces/mtf-interface";
+import * as _ from "lodash-es";
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+
 
 @Component({
-  selector: 'quml-mtf-options',
-  templateUrl: './mtf-options.component.html',
-  styleUrls: ['./mtf-options.component.scss']
+  selector: "quml-mtf-options",
+  templateUrl: "./mtf-options.component.html",
+  styleUrls: ["./mtf-options.component.scss"],
 })
 export class MtfOptionsComponent implements OnInit {
-  @Input() options: { left: any[], right: any[] };
+  @Input() options: { left: any[]; right: any[] };
   @Input() layout: string;
-  @Input() shuffleOptions: boolean
+  @Input() shuffleOptions: boolean;
   @Output() reorderedOptions = new EventEmitter<MtfOptions>();
-  shuffledOptions: { left: any[], right: any[] };
+  shuffledOptions: { left: any[]; right: any[] };
   optionsShuffled = false;
-
+  isModalVisible: boolean = false;
+  selectedImageSrc: string = '';
   constructor() {
     this.shuffledOptions = { left: [], right: [] };
   }
 
+  openModal(event: any): void {
+    const parentDiv = event.target.parentElement;
+    const figure = parentDiv.querySelector('figure');
+    if (figure) {
+      const img = figure.querySelector('img');
+      if (img) {
+        this.selectedImageSrc = img.src;
+        this.isModalVisible = true;
+      }
+    }
+  }
+
+  closeModal(): void {
+    this.isModalVisible = false;
+  }
+
   ngOnInit() {
     this.shuffleMTFOptions();
+    
   }
 
   shuffleAndCheck(array: any[]): any[] {
@@ -40,19 +59,25 @@ export class MtfOptionsComponent implements OnInit {
     const rightOptions = this.options.right;
 
     /* Left options will be shuffled if the shuffleOptions configuration is set to true */
-    let shuffledLeft = this.shuffleOptions ? this.shuffleAndCheck(leftOptions) : leftOptions;
+    let shuffledLeft = this.shuffleOptions
+      ? this.shuffleAndCheck(leftOptions)
+      : leftOptions;
 
     /* Right options will always be shuffled */
     let shuffledRight = this.shuffleAndCheck(rightOptions);
 
     /* Ensure that the shuffled lists do not contain matching pairs */
-    while (shuffledLeft.some((item, index) => item.value === shuffledRight[index].value)) {
+    while (
+      shuffledLeft.some(
+        (item, index) => item.value === shuffledRight[index].value
+      )
+    ) {
       shuffledRight = this.shuffleAndCheck(rightOptions);
     }
 
     this.shuffledOptions = {
       left: shuffledLeft,
-      right: shuffledRight
+      right: shuffledRight,
     };
     this.optionsShuffled = true;
   }
@@ -66,6 +91,9 @@ export class MtfOptionsComponent implements OnInit {
   }
 
   private swapRightOptions(index1: number, index2: number) {
-    [this.shuffledOptions.right[index1], this.shuffledOptions.right[index2]] = [this.shuffledOptions.right[index2], this.shuffledOptions.right[index1]];
+    [this.shuffledOptions.right[index1], this.shuffledOptions.right[index2]] = [
+      this.shuffledOptions.right[index2],
+      this.shuffledOptions.right[index1],
+    ];
   }
 }

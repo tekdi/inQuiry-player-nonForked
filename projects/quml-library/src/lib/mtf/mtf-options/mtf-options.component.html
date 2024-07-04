@@ -1,34 +1,23 @@
-<ng-container
-  *ngIf="optionsShuffled && (layout === 'VERTICAL' || layout === 'DEFAULT')"
->
+<ng-container *ngIf="optionsShuffled && (layout === 'VERTICAL' || layout === 'DEFAULT')">
   <div class="main-div">
     <div id="leftSide">
-      <div
-        *ngFor="let option of shuffledOptions.left"
-        class="left-option-container"
-      >
-        <img
-          src="https://sunbirdsaas.com/content-plugins/org.ekstep.questionunit.mtf-1.2/renderer/assets/shape3.png"
-          alt="Option Image"
-          class="option-image"
-        />
-        <div class="option-label1" [innerHTML]="option.label"></div>
+      <div *ngFor="let option of shuffledOptions.left" class="bubble-right">
+        <div [innerHTML]="option.label" appCheckFigure></div>
+        <div class="zoom-icon" (click)="openModal($event)"></div>
       </div>
     </div>
     <div id="rightSide" cdkDropList (cdkDropListDropped)="onDrop($event)">
-      <div
-        *ngFor="let option of shuffledOptions.right; let i = index"
-        class="right-option-container"
-        cdkDrag
-        [cdkDragData]="option"
-        cdkDragBoundary="#rightSide"
-      >
-        <div class="drag-content">
-          <img
-            src="https://sunbirdsaas.com/content-plugins/org.ekstep.questionunit.mtf-1.2/renderer/assets/shape4.png"
-          />
-          <div [innerHTML]="option.label" class="option-label2"></div>
-        </div>
+      <div *ngFor="let option of shuffledOptions.right; let i = index" class="bubble-left" cdkDrag
+        [cdkDragData]="option" cdkDragBoundary="#rightSide">
+        <div [innerHTML]="option.label" appCheckFigure></div>
+        <div class="zoom-icon" (click)="openModal($event)"></div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="mft-modal modal" *ngIf="isModalVisible">
+      <div class="modal-content">
+        <span class="modal-close" (click)="closeModal()">&times;</span>
+        <img [src]="selectedImageSrc" />
       </div>
     </div>
   </div>
@@ -37,38 +26,23 @@
 <ng-container *ngIf="optionsShuffled && layout === 'HORIZONTAL'">
   <div class="horizontal-main">
     <div id="topSide">
-      <div
-        *ngFor="let option of shuffledOptions.left; let i = index"
-        class="top-option-container"
-      >
-        <img
-          src="https://sunbirdsaas.com/content-plugins/org.ekstep.questionunit.mtf-1.2/renderer/assets/shape1.png"
-          alt="Option Image"
-        />
-        <div [innerHTML]="option.label" class="option-label3"></div>
+      <div *ngFor="let option of shuffledOptions.left; let i = index" class="bubble-bottom">
+        <div [innerHTML]="option.label" appCheckFigure></div>
+        <div class="zoom-icon" (click)="openModal($event)"></div>
       </div>
     </div>
-    <div
-      id="bottomSide"
-      cdkDropList
-      cdkDropListOrientation="horizontal"
-      (cdkDropListDropped)="onDrop($event)"
-    >
-      <div
-        *ngFor="let option of shuffledOptions.right; let i = index"
-        class="bottom-option-container"
-      >
-        <img
-          src="https://sunbirdsaas.com/content-plugins/org.ekstep.questionunit.mtf-1.2/renderer/assets/shape2.png"
-          alt="Option Image"
-        />
-        <div
-          cdkDrag
-          [innerHTML]="option.label"
-          [cdkDragData]="option"
-          cdkDragBoundary="#bottomSide"
-          class="option-label4"
-        ></div>
+    <div id="bottomSide" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="onDrop($event)">
+      <div *ngFor="let option of shuffledOptions.right; let i = index" class="bubble-top" [cdkDragData]="option"
+        cdkDrag>
+        <div [innerHTML]="option.label" cdkDragBoundary="#bottomSide" appCheckFigure></div>
+        <div class="zoom-icon" (click)="openModal($event)"></div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="mft-modal modal" *ngIf="isModalVisible">
+      <div class="modal-content">
+        <span class="modal-close" (click)="closeModal()">&times;</span>
+        <img [src]="selectedImageSrc" />
       </div>
     </div>
   </div>

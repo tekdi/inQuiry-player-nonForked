@@ -41,6 +41,7 @@ import { ProgressIndicatorsComponent } from './progress-indicators/progress-indi
 import { MtfComponent } from './mtf/mtf.component';
 import { MtfOptionsComponent } from './mtf/mtf-options/mtf-options.component';
 import { DragDropModule } from "@angular/cdk/drag-drop"
+import { CheckFigureDirective } from './mtf/check-figure.directive';
 @NgModule({
   declarations: [
     QumlLibraryComponent,
@@ -80,6 +81,8 @@ import { DragDropModule } from "@angular/cdk/drag-drop"
     ProgressIndicatorsComponent,
     MtfComponent,
     MtfOptionsComponent,
+    CheckFigureDirective
+    
   ],
   imports: [
     CommonModule,
