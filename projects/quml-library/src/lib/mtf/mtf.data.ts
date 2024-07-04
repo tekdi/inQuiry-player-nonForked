@@ -64,54 +64,54 @@ export const mtfQuestionMetadata = {
     "name": "MTF Colour",
     "responseDeclaration": {
         "response1": {
-            "cardinality": "ordered",
+            "cardinality": "multiple",
             "type": "map",
             "correctResponse": {
                 "value": [
                     {
-                        "lhs": 0,
-                        "rhs": 0
+                        "left": 0,
+                        "right": [0]
                     },
                     {
-                        "lhs": 1,
-                        "rhs": 1
+                        "left": 1,
+                        "right": [1]
                     },
                     {
-                        "lhs": 2,
-                        "rhs": 2
+                        "left": 2,
+                        "right": [2]
                     },
                     {
-                        "lhs": 3,
-                        "rhs": 3
+                        "left": 3,
+                        "right": [3]
                     }
                 ]
             },
             "mapping": [
                 {
                     "value": {
-                        "lhs": 0,
-                        "rhs": 0
+                        "left": 0,
+                        "right": 0
                     },
                     "score": 0.25
                 },
                 {
                     "value": {
-                        "lhs": 1,
-                        "rhs": 1
+                        "left": 1,
+                        "right": 1
                     },
                     "score": 0.25
                 },
                 {
                     "value": {
-                        "lhs": 2,
-                        "rhs": 2
+                        "left": 2,
+                        "right": 2
                     },
                     "score": 0.25
                 },
                 {
                     "value": {
-                        "lhs": 3,
-                        "rhs": 3
+                        "left": 3,
+                        "right": 3
                     },
                     "score": 0.25
                 }

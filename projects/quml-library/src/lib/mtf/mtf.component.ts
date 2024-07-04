@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MtfInteractions, MtfOptions } from '../interfaces/mtf-interface';
-import { mtfQuestionMetadata } from './mtf.data';
 
 @Component({
   selector: 'quml-mtf',
@@ -10,6 +9,8 @@ import { mtfQuestionMetadata } from './mtf.data';
 export class MtfComponent implements OnInit {
   @Input() question?: any;
   @Input() shuffleOptions: boolean;
+  @Input() replayed: boolean;
+  @Input() tryAgain?: boolean;
   @Output() optionsReordered = new EventEmitter<MtfOptions>();
 
   public interactions?: MtfInteractions;
