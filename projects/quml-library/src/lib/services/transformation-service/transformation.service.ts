@@ -114,7 +114,7 @@ export class TransformationService {
   getTransformedQuestionMetadata(data) {
     if (_.has(data, 'questions')) {
       _.forEach(data.questions, (question) => {
-        if (!_.has(question, 'qumlVersion') || question.qumlVersion != 1.1) {
+        if ((!_.has(question, 'qumlVersion') || question.qumlVersion != 1.1) && _.includes(['MCQ', 'MMCQ', 'SA'], question.qType)) {
           question = this.processResponseDeclaration(question);
           question = this.processInteractions(question);
           question = this.processSolutions(question);
