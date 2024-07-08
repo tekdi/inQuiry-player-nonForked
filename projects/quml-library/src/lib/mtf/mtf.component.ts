@@ -21,13 +21,13 @@ export class MtfComponent implements OnInit {
     this.initialize();
   }
 
-  private initialize(): void {
+  initialize(): void {
     this.setLayout();
     this.interactions = this.question?.interactions;
     this.questionBody = this.question?.body;
   }
 
-  private setLayout(): void {
+  setLayout(): void {
     const templateId = this.question?.templateId;
     if (templateId === 'mtf-vertical') {
       this.layout = 'VERTICAL';
@@ -39,7 +39,7 @@ export class MtfComponent implements OnInit {
     }
   }
 
-  public handleReorderedOptions(reorderedOptions: MtfOptions) {
+  handleReorderedOptions(reorderedOptions: MtfOptions) {
     this.optionsReordered.emit(reorderedOptions);
   }
 }

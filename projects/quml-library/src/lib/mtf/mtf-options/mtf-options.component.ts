@@ -18,24 +18,9 @@ export class MtfOptionsComponent implements OnInit, OnChanges {
   optionsShuffled = false;
   isModalVisible: boolean = false;
   selectedImageSrc: string = '';
+
   constructor() {
     this.shuffledOptions = { left: [], right: [] };
-  }
-
-  openModal(event: any): void {
-    const parentDiv = event.target.parentElement;
-    const figure = parentDiv.querySelector('figure');
-    if (figure) {
-      const img = figure.querySelector('img');
-      if (img) {
-        this.selectedImageSrc = img.src;
-        this.isModalVisible = true;
-      }
-    }
-  }
-
-  closeModal(): void {
-    this.isModalVisible = false;
   }
 
   ngOnInit() {
@@ -46,17 +31,6 @@ export class MtfOptionsComponent implements OnInit, OnChanges {
     if(this.replayed || this.tryAgain) {
       this.shuffleMTFOptions();
     }
-  }
-
-  shuffleAndCheck(array: any[]): any[] {
-    let shuffledArray;
-    while (true) {
-      shuffledArray = _.shuffle(array);
-      if (shuffledArray.every((item, index) => item.value !== index)) {
-        break;
-      }
-    }
-    return shuffledArray;
   }
 
   shuffleMTFOptions() {
@@ -87,6 +61,17 @@ export class MtfOptionsComponent implements OnInit, OnChanges {
     this.optionsShuffled = true;
   }
 
+  shuffleAndCheck(array: any[]): any[] {
+    let shuffledArray;
+    while (true) {
+      shuffledArray = _.shuffle(array);
+      if (shuffledArray.every((item, index) => item.value !== index)) {
+        break;
+      }
+    }
+    return shuffledArray;
+  }
+
   onDrop(event: any) {
     const droppedItem = event.item.data;
     const currentIndex = this.shuffledOptions.right.indexOf(droppedItem);
@@ -95,10 +80,26 @@ export class MtfOptionsComponent implements OnInit, OnChanges {
     this.reorderedOptions.emit(this.shuffledOptions);
   }
 
-  private swapRightOptions(index1: number, index2: number) {
+  swapRightOptions(index1: number, index2: number) {
     [this.shuffledOptions.right[index1], this.shuffledOptions.right[index2]] = [
       this.shuffledOptions.right[index2],
       this.shuffledOptions.right[index1],
     ];
+  }
+
+  openModal(event: any): void {
+    const parentDiv = event.target.parentElement;
+    const figure = parentDiv.querySelector('figure');
+    if (figure) {
+      const img = figure.querySelector('img');
+      if (img) {
+        this.selectedImageSrc = img.src;
+        this.isModalVisible = true;
+      }
+    }
+  }
+
+  closeModal(): void {
+    this.isModalVisible = false;
   }
 }

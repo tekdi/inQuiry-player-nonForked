@@ -203,4 +203,27 @@ export const mtfQuestionMetadata = {
         "Student"
     ],
     "license": "CC BY 4.0"
-}
+};
+
+export const reorderedOptions = {
+    left: [
+        {
+            label: 'Red',
+            value: 0
+        },
+        {
+            label: 'Green',
+            value: 1
+        }
+    ],
+    right: [
+        {
+            label: 'Apple',
+            value: 0
+        },
+        {
+            label: 'Grapes',
+            value: 1
+        }
+    ]
+};
