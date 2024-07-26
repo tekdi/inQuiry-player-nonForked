@@ -6,7 +6,7 @@
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "homepage": "https://github.com/tekdi/inQuiry-player.git#readme",
+    "homepage": "https://github.com/tekdi/inQuiry-player#readme",
     "keywords": [
       "sunbird",
       "QuML",
@@ -16,7 +16,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/tekdi/inQuiry-player.git.git"
+        "url": "https://github.com/tekdi/inQuiry-player.git"
     },
     "author": "Sunbird",
     "license": "MIT"
