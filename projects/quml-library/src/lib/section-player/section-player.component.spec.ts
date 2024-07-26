@@ -10,7 +10,7 @@ import { ViewerService } from '../services/viewer-service/viewer-service';
 import { UtilService } from '../util-service';
 import { QuestionCursor } from './../quml-question-cursor.service';
 import { SectionPlayerComponent } from './section-player.component';
-import { mockSectionPlayerConfig } from './section-player.component.spec.data';
+import { mockSectionMTFQuestions, mockSectionPlayerConfig, rearrangedOptions } from './section-player.component.spec.data';
 
 
 describe('SectionPlayerComponent', () => {
@@ -468,6 +468,41 @@ describe('SectionPlayerComponent', () => {
     expect(component.validateQuestionInteraction).toHaveBeenCalled()
   });
 
+  it('#handleMTFOptionsChange() should update scoreboard with skipped', () => {
+    component.mtfReorderedOptionsMap = undefined;
+    component.myCarousel = myCarousel;
+    component.questions = mockSectionQuestions;
+    component.parentConfig = mockParentConfig;
+    component.showFeedBack = false;
+    spyOn(component, 'focusOnNextButton').and.callFake(() => {});
+    spyOn(viewerService, 'raiseHeartBeatEvent').and.callFake(() => {});
+    spyOn(component, 'validateQuestionInteraction').and.callFake(() => {});
+    spyOn(component, 'updateScoreBoard').and.callFake(() => {})
+    component.handleMTFOptionsChange(undefined);
+    expect(component.focusOnNextButton).toHaveBeenCalled();
+    expect(component.active).toBe(true);
+    expect(component.currentSolutions).toBe(undefined);
+    expect(viewerService.raiseHeartBeatEvent).toHaveBeenCalled();
+    expect(component.validateQuestionInteraction).toHaveBeenCalled()
+  });
+
+  it('#handleMTFOptionsChange() should update scoreboard', () => {
+    component.mtfReorderedOptionsMap = undefined;
+    component.myCarousel = myCarousel;
+    component.questions = mockSectionMTFQuestions;
+    component.showFeedBack = false;
+    spyOn(component, 'focusOnNextButton').and.callFake(() => {});
+    spyOn(viewerService, 'raiseHeartBeatEvent').and.callFake(() => {});
+    spyOn(component, 'validateQuestionInteraction').and.callFake(() => {});
+    spyOn(component, 'updateScoreBoard').and.callFake(() => {})
+    component.handleMTFOptionsChange(rearrangedOptions);
+    expect(component.focusOnNextButton).toHaveBeenCalled();
+    expect(component.active).toBe(true);
+    expect(component.currentSolutions).toBeDefined();
+    expect(viewerService.raiseHeartBeatEvent).toHaveBeenCalled();
+    expect(component.validateQuestionInteraction).toHaveBeenCalled()
+  });
+
   it('should handle the duration end', () => {
     spyOn(component, 'emitSectionEnd');
     spyOn(viewerService, 'pauseVideo');
@@ -568,6 +603,200 @@ describe('SectionPlayerComponent', () => {
     component.allowSkip = true;
     spyOn(component, 'isSkipAllowed').and.callThrough();
     expect(component.isSkipAllowed('MTF')).toBeTruthy();
+  });
+
+  it('handleInteraction() should call handleMCQInteraction for MCQ', () => {
+    component.optionSelectedObj = {
+      "name": "optionSelect",
+      "option": {
+          "value": 1,
+      },
+      "cardinality": "single"
+    }
+    const selectedQuestion = mockSectionPlayerConfig.mockSectionQuestions[0];
+    const responseKey = 'response1';
+    const edataItem = {};
+    const currentIndex = 0;
+    const type = 'next';
+    spyOn(component, 'handleMCQInteraction').and.callFake(() => {});
+    spyOn(component, 'handleInteraction').and.callThrough();
+    component.handleInteraction(selectedQuestion, responseKey, edataItem, currentIndex, type);
+    expect(component.handleMCQInteraction).toHaveBeenCalled();
+  });
+
+  it('handleInteraction() should call handleMCQInteraction for MMCQ', () => {
+    component.optionSelectedObj = {
+      "name": "optionSelect",
+      "option": {
+          "value": 1,
+      },
+      "cardinality": "multiple"
+    }
+    const selectedQuestion = mockSectionPlayerConfig.mockSectionMultiSelectQuestions[0];
+    const responseKey = 'response1';
+    const edataItem = {};
+    const currentIndex = 0;
+    const type = 'next';
+    spyOn(component, 'handleMCQInteraction').and.callFake(() => {});
+    spyOn(component, 'handleInteraction').and.callThrough();
+    component.handleInteraction(selectedQuestion, responseKey, edataItem, currentIndex, type);
+    expect(component.handleMCQInteraction).toHaveBeenCalled();
+  });
+
+  it('handleInteraction() should call handleMTFInteraction for MTF', () => {
+    component.mtfReorderedOptionsMap = rearrangedOptions;
+    const selectedQuestion = mockSectionMTFQuestions[0];
+    const responseKey = 'response1';
+    const edataItem = {};
+    const currentIndex = 0;
+    const type = 'next';
+    spyOn(component, 'handleMTFInteraction').and.callFake(() => {});
+    spyOn(component, 'handleInteraction').and.callThrough();
+    component.handleInteraction(selectedQuestion, responseKey, edataItem, currentIndex, type);
+    expect(component.handleMTFInteraction).toHaveBeenCalled();
+  });
+
+  it('handleMCQInteraction() should call getMultiselectScore for MMCQ', () => {
+    component.optionSelectedObj = {
+      "name": "optionSelect",
+      "option": {
+          "value": 1,
+      },
+      "cardinality": "multiple"
+    }
+    const selectedQuestion = mockSectionPlayerConfig.mockSectionMultiSelectQuestions[0];
+    const edataItem = {};
+    const currentIndex = 0;
+    const isMultipleChoice = true;
+    const type = 'next'
+    spyOn(utilService, 'getMultiselectScore').and.returnValue(1);
+    spyOn(component, 'handleCorrectAnswer').and.callFake(() => {});
+    spyOn(component, 'handleMCQInteraction').and.callThrough();
+    component.handleMCQInteraction(selectedQuestion, edataItem, currentIndex, isMultipleChoice, type);
+    expect(utilService.getMultiselectScore).toHaveBeenCalled();
+  });
+
+  it('handleMCQInteraction() should call getSingleSelectScore for MCQ', () => {
+    component.optionSelectedObj = {
+      "name": "optionSelect",
+      "option": {
+          "value": 1,
+      },
+      "cardinality": "single"
+    }
+    const selectedQuestion = mockSectionPlayerConfig.mockSectionQuestions[0];
+    const edataItem = {};
+    const currentIndex = 0;
+    const isMultipleChoice = false;
+    const type = 'next'
+    spyOn(utilService, 'getSingleSelectScore').and.returnValue(1);
+    spyOn(component, 'handleCorrectAnswer').and.callFake(() => {});
+    spyOn(component, 'handleMCQInteraction').and.callThrough();
+    component.handleMCQInteraction(selectedQuestion, edataItem, currentIndex, isMultipleChoice, type);
+    expect(utilService.getSingleSelectScore).toHaveBeenCalled();
+  });
+
+  it('handleMTFInteraction() should call getMTFScore for MTF', () => {
+    component.isShuffleQuestions = false;
+    component.mtfReorderedOptionsMap = rearrangedOptions;
+    const selectedQuestion = mockSectionMTFQuestions[0];
+    const edataItem = {};
+    const currentIndex = 0;
+    const isMultipleChoice = false;
+    const type = 'next'
+    spyOn(utilService, 'getMTFScore').and.returnValue(1);
+    spyOn(component, 'handleCorrectAnswer').and.callFake(() => {});
+    spyOn(component, 'handleMTFInteraction').and.callThrough();
+    component.handleMTFInteraction(selectedQuestion, edataItem, currentIndex, type);
+    expect(utilService.getMTFScore).toHaveBeenCalled();
+  });
+
+  it('handleMTFInteraction() should call getMTFScore for MTF with score 0', () => {
+    component.isShuffleQuestions = false;
+    component.mtfReorderedOptionsMap = rearrangedOptions;
+    const selectedQuestion = mockSectionMTFQuestions[0];
+    const edataItem = {};
+    const currentIndex = 0;
+    const isMultipleChoice = false;
+    const type = 'next'
+    spyOn(component, 'handleWrongAnswer').and.callFake(() => {});
+    spyOn(utilService, 'getMTFScore').and.returnValue(0);
+    spyOn(component, 'handleMTFInteraction').and.callThrough();
+    component.handleMTFInteraction(selectedQuestion, edataItem, currentIndex, type);
+    expect(utilService.getMTFScore).toHaveBeenCalled();
+  });
+
+  it('handleCorrectAnswer() should call correctFeedBackTimeOut', () => {
+    component.alertType = undefined;
+    component.showFeedBack = true;
+    component.isAssessEventRaised = false;
+    spyOn(component, 'updateScoreBoard').and.callFake(() => {});
+    spyOn(component, 'correctFeedBackTimeOut').and.callFake(() => {});
+    spyOn(viewerService, 'raiseAssesEvent').and.callFake(() => {});
+    spyOn(component, 'handleCorrectAnswer').and.callThrough();
+    component.handleCorrectAnswer(1, {}, 0, {}, 'next');
+    expect(component.correctFeedBackTimeOut).toHaveBeenCalled();
+  });
+
+  it('handleWrongAnswer() should call updateScoreBoard', () => {
+    component.progressBarClass = mockSectionProgressBar.children;
+    component.alertType = undefined;
+    component.showFeedBack = true;
+    component.isAssessEventRaised = false;
+    spyOn(component, 'updateScoreBoard').and.callFake(() => {});
+    spyOn(component, 'correctFeedBackTimeOut').and.callFake(() => {});
+    spyOn(viewerService, 'raiseAssesEvent').and.callFake(() => {});
+    spyOn(component, 'handleWrongAnswer').and.callThrough();
+    component.handleWrongAnswer(0, {}, 0, {}, 'next');
+    expect(component.updateScoreBoard).toHaveBeenCalled();
+  });
+
+  it('handleNoInteraction() should call nextSlide()', () => {
+    component.isAssessEventRaised = false;
+    component.myCarousel = jasmine.createSpyObj("CarouselComponent", {
+      "getCurrentSlideIndex": 0, "move": {}, isLast: false
+    });
+    component.active = true;
+    component.startPageInstruction = 'test';
+    spyOn(component, 'nextSlide').and.callFake(() => {});
+    spyOn(viewerService, 'raiseAssesEvent').and.callFake(() => {});
+    spyOn(component, 'handleNoInteraction').and.callThrough();
+    component.handleNoInteraction(true, {}, 0 , 'next');
+  });
+
+  it('handleNoInteraction() should call infoPopupTimeOut()', () => {
+    // component.progressBarClass = mockSectionProgressBar.children;
+    component.isAssessEventRaised = true;
+    component.myCarousel = jasmine.createSpyObj("CarouselComponent", {
+      "getCurrentSlideIndex": 1, "move": {}, isLast: false
+    });
+    component.active = false;
+    component.startPageInstruction = '';
+    component.optionSelectedObj = undefined;
+    component.active = false;
+    component.allowSkip = false;
+    component.startPageInstruction = 'test';
+    spyOn(utilService, 'canGo').and.returnValue(true);
+    spyOn(component, 'infoPopupTimeOut').and.callFake(() => {});
+    spyOn(component, 'shouldShowInfoPopup').and.returnValue(true);
+    spyOn(viewerService, 'raiseAssesEvent').and.callFake(() => {});
+    spyOn(component, 'handleNoInteraction').and.callThrough();
+    component.handleNoInteraction(false, {}, 0 , 'next');
+  });
+
+  it('#shouldShowInfoPopup() should return true', () => {
+    component.progressBarClass = mockSectionProgressBar.children;
+    spyOn(utilService, 'getQuestionType').and.returnValue('MCQ');
+    component.myCarousel = jasmine.createSpyObj("CarouselComponent", {
+      "getCurrentSlideIndex": 1, "move": {}, isLast: false
+    });
+    component.active = false;
+    component.allowSkip = false;
+    spyOn(utilService, 'canGo').and.returnValue(true);
+    component.startPageInstruction = undefined;
+    spyOn(component, 'shouldShowInfoPopup').and.callThrough();
+    const result = component.shouldShowInfoPopup(0);
+    expect(result).toBeTruthy();
   });
 
   it('should hide the popup once the time is over', fakeAsync(() => {
