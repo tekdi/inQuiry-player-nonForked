@@ -1,12 +1,12 @@
 {
-    "name": "@project-sunbird/sunbird-quml-player-web-component",
-    "version": "3.0.4",
+    "name": "@tekdi/sunbird-quml-player-web-component",
+    "version": "3.0.0",
     "description": "The web component package for the sunbird QuML player",
     "main": "sunbird-quml-player.js",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "homepage": "https://github.com/Sunbird-inQuiry/player#readme",
+    "homepage": "https://github.com/tekdi/inQuiry-player#readme",
     "keywords": [
       "sunbird",
       "QuML",
@@ -16,7 +16,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/Sunbird-inQuiry/player.git"
+        "url": "https://github.com/tekdi/inQuiry-player.git"
     },
     "author": "Sunbird",
     "license": "MIT"
