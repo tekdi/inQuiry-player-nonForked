@@ -32,6 +32,7 @@ export enum eventName {
     deviceRotationClicked = 'DEVICE_ROTATION_CLICKED',
     progressIndicatorPopupClosed = 'PROGRESS_INDICATOR_POPUP_CLOSED',
     progressIndicatorPopupOpened = 'PROGRESS_INDICATOR_POPUP_OPENED',
+    optionsReordered = 'OPTIONS_REORDERED'
 }
 
 export enum TelemetryType {
@@ -51,5 +52,7 @@ export enum Cardinality {
 
 export enum QuestionType {
     mcq = 'MCQ',
-    sa = 'SA'
+    mmcq = 'MMCQ',
+    sa = 'SA',
+    mtf = 'MTF'
 }

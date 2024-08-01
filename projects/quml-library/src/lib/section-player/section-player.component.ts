@@ -5,6 +5,7 @@ import { CarouselComponent } from 'ngx-bootstrap/carousel';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { QumlPlayerConfig, IParentConfig, IAttempts } from '../quml-library-interface';
+import { MtfOptions } from '../interfaces/mtf-interface';
 import { ViewerService } from '../services/viewer-service/viewer-service';
 import { eventName, pageId, TelemetryType, Cardinality, QuestionType } from '../telemetry-constants';
 import { DEFAULT_SCORE, COMPATABILITY_LEVEL } from '../player-constants';
@@ -75,6 +76,7 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
   currentSolutions: any;
   showSolution: any;
   optionSelectedObj: any;
+  mtfReorderedOptionsMap: any;
   intervalRef: any;
   alertType: string;
   infoPopup: boolean;
@@ -381,6 +383,7 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
     this.active = false;
     this.showAlert = false;
     this.optionSelectedObj = undefined;
+    this.mtfReorderedOptionsMap = undefined;
     this.currentOptionSelected = undefined;
     this.currentQuestion = undefined;
     this.currentOptions = undefined;
@@ -416,16 +419,16 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
     }
     /* istanbul ignore else */
     if (event?.type === 'next') {
-      this.validateSelectedOption(this.optionSelectedObj, 'next');
+      this.validateQuestionInteraction('next');
     }
   }
 
   previousSlideClicked(event) {
     /* istanbul ignore else */
     if (event.event === 'previous clicked') {
-      if (this.optionSelectedObj && this.showFeedBack) {
+      if ((this.optionSelectedObj || this.mtfReorderedOptionsMap) && this.showFeedBack) {
         this.stopAutoNavigation = false;
-        this.validateSelectedOption(this.optionSelectedObj, 'previous');
+        this.validateQuestionInteraction('previous');
       } else {
         this.stopAutoNavigation = true;
         if (this.currentSlideIndex === 0 && this.parentConfig.isSectionsAvailable && this.getCurrentSectionIndex() > 0) {
@@ -464,9 +467,9 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
     event.stopPropagation();
     this.active = false;
     this.jumpSlideIndex = index;
-    if (this.optionSelectedObj && this.showFeedBack) {
+    if ((this.optionSelectedObj || this.mtfReorderedOptionsMap) && this.showFeedBack) {
       this.stopAutoNavigation = false;
-      this.validateSelectedOption(this.optionSelectedObj, 'jump');
+      this.validateQuestionInteraction('jump');
     } else {
       this.stopAutoNavigation = true;
       this.goToSlide(this.jumpSlideIndex);
@@ -492,7 +495,7 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
       event.stopPropagation();
       /* istanbul ignore else */
       if (this.optionSelectedObj) {
-        this.validateSelectedOption(this.optionSelectedObj, 'jump');
+        this.validateQuestionInteraction('jump');
       }
       this.jumpToSection(identifier);
     }
@@ -547,7 +550,27 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
    
     /* istanbul ignore else */
     if (!this.showFeedBack) {
-      this.validateSelectedOption(this.optionSelectedObj);
+      this.validateQuestionInteraction();
+    }
+  }
+
+  handleMTFOptionsChange(rearrangedOptions: MtfOptions) {
+    this.focusOnNextButton();
+    this.active = true;
+    const currentIndex = this.myCarousel.getCurrentSlideIndex() - 1;
+    this.viewerService.raiseHeartBeatEvent(eventName.optionsReordered, TelemetryType.interact, this.myCarousel.getCurrentSlideIndex());
+    const currentQuestion = this.questions[currentIndex];
+    if (_.isEmpty(rearrangedOptions)) {
+      this.updateScoreBoard(currentIndex, 'skipped');
+    } else {
+      this.mtfReorderedOptionsMap = rearrangedOptions;
+      this.isAssessEventRaised = false;
+      this.currentSolutions = !_.isEmpty(currentQuestion.solutions) ? currentQuestion.solutions : undefined;
+    }
+    this.currentQuestionIndetifier = currentQuestion.identifier;
+    this.media = _.get(currentQuestion, 'media', []);
+    if (!this.showFeedBack) {
+      this.validateQuestionInteraction();
     }
   }
 
@@ -623,114 +646,144 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
     this.viewerService.raiseHeartBeatEvent(eventName.deviceRotationClicked, TelemetryType.interact, this.myCarousel.getCurrentSlideIndex() + 1);
   }
 
-  validateSelectedOption(option, type?: string) {
-    const selectedOptionValue = option?.option?.value;
+  validateQuestionInteraction(eventType ?: string) {
     const currentIndex = this.myCarousel.getCurrentSlideIndex() - 1;
-    const isQuestionSkipAllowed = !this.optionSelectedObj &&
-      this.allowSkip && this.utilService.getQuestionType(this.questions, currentIndex) === QuestionType.mcq;
-    const isSubjectiveQuestion = this.utilService.getQuestionType(this.questions, currentIndex) === QuestionType.sa;
-    const onStartPage = this.startPageInstruction && this.myCarousel.getCurrentSlideIndex() === 0;
-    const isActive = !this.optionSelectedObj && this.active;
     const selectedQuestion = this.questions[currentIndex];
-    const key = selectedQuestion.responseDeclaration ? this.utilService.getKeyValue(Object.keys(selectedQuestion.responseDeclaration)) : '';
+    const responseKey = selectedQuestion.responseDeclaration ?
+    this.utilService.getKeyValue(Object.keys(selectedQuestion.responseDeclaration)) : '';
     this.slideDuration = Math.round((new Date().getTime() - this.initialSlideDuration) / 1000);
-    const getParams = () => {
-      if (selectedQuestion.qType.toUpperCase() === QuestionType.mcq && selectedQuestion?.editorState?.options) {
-        return selectedQuestion.editorState.options;
-      } else if (selectedQuestion.qType.toUpperCase() === QuestionType.mcq && !_.isEmpty(selectedQuestion?.editorState)) {
-        return [selectedQuestion?.editorState];
-      } else {
-        return [];
-      }
-    };
-    const edataItem: any = {
-      'id': selectedQuestion.identifier,
-      'title': selectedQuestion.name,
-      'desc': selectedQuestion.description,
-      'type': selectedQuestion.qType.toLowerCase(),
-      'maxscore': key.length === 0 ? 0 : selectedQuestion.outcomeDeclaration.maxScore.defaultValue || 0,
-      'params': getParams()
-    };
 
-    /* istanbul ignore else */
-    if (edataItem && this.parentConfig.isSectionsAvailable) {
-      edataItem.sectionId = this.sectionConfig.metadata.identifier;
+    const edataItem: any = this.utilService.getEDataItem(selectedQuestion, responseKey);
+    if (edataItem && this.parentConfig?.isSectionsAvailable) {
+      edataItem['sectionId'] = this.sectionConfig?.metadata?.identifier;
     }
 
-    /* istanbul ignore else */
-    if (!this.optionSelectedObj && !this.isAssessEventRaised && selectedQuestion.qType.toUpperCase() !== QuestionType.sa) {
+    const questionType = this.questions[currentIndex]['qType'];
+    const isQuestionSkipAllowed = this.isSkipAllowed(questionType);
+
+    if (!isQuestionSkipAllowed) {
+      this.handleInteraction(selectedQuestion, responseKey, edataItem, currentIndex, eventType);
+    } else {
+      this.handleNoInteraction(isQuestionSkipAllowed, edataItem, currentIndex, eventType);
+    }
+  }
+
+  isSkipAllowed(questionType: string): boolean {
+    if (questionType === QuestionType.sa) {
+        return true;
+    }
+    if (
+      (questionType === QuestionType.mtf && !this.mtfReorderedOptionsMap) ||
+      ((questionType === QuestionType.mcq || questionType === QuestionType.mmcq) && !this.optionSelectedObj) &&
+      this.allowSkip) {
+        return true;
+    }
+    return false;
+  }
+
+  handleInteraction(selectedQuestion: any, responseKey: string, edataItem: any, currentIndex: number, type ?: string) {
+    this.currentQuestion = selectedQuestion.body;
+    this.currentOptions = selectedQuestion.interactions[responseKey].options;
+    this.showAlert = true;
+
+    if (this.optionSelectedObj && (selectedQuestion.qType === QuestionType.mcq || selectedQuestion.qType === QuestionType.mmcq)) {
+      if (this.optionSelectedObj.cardinality === Cardinality.single) {
+        this.handleMCQInteraction(selectedQuestion, edataItem, currentIndex, false, type);
+      } else if (this.optionSelectedObj.cardinality === Cardinality.multiple) {
+        this.handleMCQInteraction(selectedQuestion, edataItem, currentIndex, true, type);
+      }
+      this.optionSelectedObj = undefined;
+    }
+
+    if (this.mtfReorderedOptionsMap && selectedQuestion.qType === QuestionType.mtf) {
+      this.handleMTFInteraction(selectedQuestion, edataItem, currentIndex, type);
+      this.mtfReorderedOptionsMap = undefined;
+    }
+  }
+
+  handleMCQInteraction(selectedQuestion: any, edataItem: any, currentIndex: number, isMultipleChoice: boolean, type ?: string) {
+    const responseDeclaration = selectedQuestion.responseDeclaration;
+    const outcomeDeclaration = selectedQuestion.outcomeDeclaration;
+    const selectedOptions = this.optionSelectedObj.option;
+
+    let currentScore: number;
+    let optionsToPass: any[];
+
+    if (isMultipleChoice) {
+        currentScore = this.utilService.getMultiselectScore(selectedOptions, responseDeclaration, this.isShuffleQuestions, outcomeDeclaration);
+        optionsToPass = selectedOptions;
+    } else {
+        currentScore = this.utilService.getSingleSelectScore(selectedOptions, responseDeclaration, this.isShuffleQuestions, outcomeDeclaration);
+        optionsToPass = [selectedOptions];
+    }
+
+    if (currentScore === 0) {
+        this.handleWrongAnswer(currentScore, edataItem, currentIndex, optionsToPass, type);
+    } else {
+        this.handleCorrectAnswer(currentScore, edataItem, currentIndex, optionsToPass, type);
+    }
+  }
+
+  handleMTFInteraction(selectedQuestion, edataItem, currentIndex, type) {
+    const responseDeclaration = selectedQuestion.responseDeclaration;
+    const outcomeDeclaration = selectedQuestion.outcomeDeclaration;
+    const userResponse = this.mtfReorderedOptionsMap;
+    const currentScore = this.utilService.getMTFScore(userResponse, responseDeclaration, this.isShuffleQuestions, outcomeDeclaration);
+    if (currentScore === 0) {
+      this.handleWrongAnswer(currentScore, edataItem, currentIndex, userResponse, type);
+    } else {
+      this.handleCorrectAnswer(currentScore, edataItem, currentIndex, userResponse, type);
+    }
+  }
+
+  handleCorrectAnswer(currentScore, edataItem: any, currentIndex: number, userResponse: any, type ?: string) {
+    if (!this.isAssessEventRaised) {
+      this.isAssessEventRaised = true;
+      this.viewerService.raiseAssesEvent(edataItem, currentIndex + 1, 'Yes', currentScore, userResponse, this.slideDuration);
+    }
+    this.alertType = 'correct';
+    if (this.showFeedBack) {
+      this.correctFeedBackTimeOut(type);
+    }
+    this.updateScoreBoard(currentIndex, 'correct', userResponse, currentScore);
+  }
+
+  handleWrongAnswer(currentScore,edataItem: any, currentIndex: number, userResponse: any, type ?: string) {
+    this.alertType = 'wrong';
+    const classType = this.progressBarClass[currentIndex].class === 'partial' ? 'partial' : 'wrong';
+    this.updateScoreBoard(currentIndex, classType, userResponse, currentScore);
+
+    if (!this.isAssessEventRaised) {
+        this.isAssessEventRaised = true;
+        this.viewerService.raiseAssesEvent(edataItem, currentIndex + 1, 'No', 0, userResponse, this.slideDuration);
+    }
+  }
+
+  handleNoInteraction(isQuestionSkipAllowed: boolean, edataItem: any, currentIndex: number, type ?: string) {
+    if (!this.isAssessEventRaised) {
       this.isAssessEventRaised = true;
       this.viewerService.raiseAssesEvent(edataItem, currentIndex + 1, 'No', 0, [], this.slideDuration);
     }
+    const onStartPage = this.startPageInstruction && this.myCarousel.getCurrentSlideIndex() === 0;
 
-    if (this.optionSelectedObj) {
-      this.currentQuestion = selectedQuestion.body;
-      this.currentOptions = selectedQuestion.interactions[key].options;
-
-      if (option.cardinality === Cardinality.single) {
-        const correctOptionValue = Number(selectedQuestion.responseDeclaration[key].correctResponse.value);
-
-        this.showAlert = true;
-        if (option.option?.value === correctOptionValue) {
-          const currentScore = this.getScore(currentIndex, key, true);
-          if (!this.isAssessEventRaised) {
-            this.isAssessEventRaised = true;
-            this.viewerService.raiseAssesEvent(edataItem, currentIndex + 1, 'Yes', currentScore, [option.option], this.slideDuration);
-          }
-          this.alertType = 'correct';
-          if (this.showFeedBack)
-            this.correctFeedBackTimeOut(type);
-          this.updateScoreBoard(currentIndex, 'correct', undefined, currentScore);
-        } else {
-          const currentScore = this.getScore(currentIndex, key, false, option);
-          this.alertType = 'wrong';
-          const classType = this.progressBarClass[currentIndex].class === 'partial' ? 'partial' : 'wrong';
-          this.updateScoreBoard(currentIndex, classType, selectedOptionValue, currentScore);
-
-          /* istanbul ignore else */
-          if (!this.isAssessEventRaised) {
-            this.isAssessEventRaised = true;
-            this.viewerService.raiseAssesEvent(edataItem, currentIndex + 1, 'No', 0, [option.option], this.slideDuration);
-          }
-        }
-      }
-      if (option.cardinality === Cardinality.multiple) {
-        const responseDeclaration = this.questions[currentIndex].responseDeclaration;
-        const outcomeDeclaration = this.questions[currentIndex].outcomeDeclaration;
-        const currentScore = this.utilService.getMultiselectScore(option.option, responseDeclaration, this.isShuffleQuestions, outcomeDeclaration);
-        this.showAlert = true;
-        if (currentScore === 0) {
-          if (!this.isAssessEventRaised) {
-            this.isAssessEventRaised = true;
-            this.viewerService.raiseAssesEvent(edataItem, currentIndex + 1, 'No', 0, [option.option], this.slideDuration);
-          }
-          this.alertType = 'wrong';
-          this.updateScoreBoard(currentIndex, 'wrong');
-        } else {
-          this.updateScoreBoard(currentIndex, 'correct', undefined, currentScore);
-          if (!this.isAssessEventRaised) {
-            this.isAssessEventRaised = true;
-            this.viewerService.raiseAssesEvent(edataItem, currentIndex + 1, 'Yes', currentScore, [option.option], this.slideDuration);
-          }
-          if (this.showFeedBack)
-            this.correctFeedBackTimeOut(type);
-          this.alertType = 'correct';
-        }
-      }
-      this.optionSelectedObj = undefined;
-    } else if ((isQuestionSkipAllowed) || isSubjectiveQuestion || onStartPage || isActive) {
-      if(!_.isUndefined(type)) {
+    if (isQuestionSkipAllowed || onStartPage || this.active) {
+      if (!_.isUndefined(type)) {
         this.nextSlide();
       }
-    } else if (this.startPageInstruction && !this.optionSelectedObj && !this.active && !this.allowSkip &&
-      this.myCarousel.getCurrentSlideIndex() > 0 && this.utilService.getQuestionType(this.questions, currentIndex) === QuestionType.mcq
-      && this.utilService.canGo(this.progressBarClass[this.myCarousel.getCurrentSlideIndex()])) {
-      this.infoPopupTimeOut();
-    } else if (!this.optionSelectedObj && !this.active && !this.allowSkip && this.myCarousel.getCurrentSlideIndex() >= 0
-      && this.utilService.getQuestionType(this.questions, currentIndex) === QuestionType.mcq
-      && this.utilService.canGo(this.progressBarClass[this.myCarousel.getCurrentSlideIndex()])) {
-      this.infoPopupTimeOut();
+    } else if (this.shouldShowInfoPopup(currentIndex)) {
+        this.infoPopupTimeOut();
     }
+  }
+
+  shouldShowInfoPopup(currentIndex: number): boolean {
+    const questionType = this.utilService.getQuestionType(this.questions, currentIndex);
+    const slideIndex = this.myCarousel.getCurrentSlideIndex();
+    const canGo = this.utilService.canGo(this.progressBarClass[slideIndex]);
+
+    const commonConditions = !this.optionSelectedObj && !this.active && !this.allowSkip &&
+    (questionType === QuestionType.mcq || questionType === QuestionType.mtf) && canGo;
+
+    return commonConditions && (this.startPageInstruction ? slideIndex > 0 : slideIndex >= 0);
   }
 
   infoPopupTimeOut() {
@@ -765,6 +818,7 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
     this.showRootInstruction = false;
     if (index === 0) {
       this.optionSelectedObj = undefined;
+      this.mtfReorderedOptionsMap = undefined;
       this.myCarousel.selectSlide(0);
       this.active = this.currentSlideIndex === 0 && this.sectionIndex === 0 && this.showStartPage;
       this.showRootInstruction = true;
@@ -899,34 +953,6 @@ export class SectionPlayerComponent implements OnChanges, AfterViewInit {
       }
       this.viewerService.raiseHeartBeatEvent(eventName.showAnswer, TelemetryType.interact, pageId.shortAnswer);
       this.viewerService.raiseHeartBeatEvent(eventName.pageScrolled, TelemetryType.impression, this.myCarousel.getCurrentSlideIndex() - 1);
-    }
-  }
-
-  getScore(currentIndex, key, isCorrectAnswer, selectedOption?) {
-    /* istanbul ignore else */
-    if (isCorrectAnswer) {
-      if (this.isShuffleQuestions) {
-        return DEFAULT_SCORE;
-      }
-      return this.questions[currentIndex].outcomeDeclaration.maxScore.defaultValue ?
-        this.questions[currentIndex].outcomeDeclaration.maxScore.defaultValue : DEFAULT_SCORE;
-    } else {
-      const selectedOptionValue = selectedOption.option.value;
-      const mapping = this.questions[currentIndex].responseDeclaration.mapping;
-      let score = 0;
-
-      /* istanbul ignore else */
-      if (mapping) {
-        mapping.forEach((val) => {
-          if (selectedOptionValue === val.value) {
-            score = val.score || 0;
-            if (val.score) {
-              this.progressBarClass[currentIndex].class = 'partial';
-            }
-          }
-        });
-      }
-      return score;
     }
   }
 

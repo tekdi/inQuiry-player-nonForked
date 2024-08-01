@@ -37,8 +37,11 @@ import { QumlLibraryService } from './quml-library.service';
 import { SafeHtmlPipe } from './pipes/safe-html/safe-html.pipe';
 import { MainPlayerComponent } from './main-player/main-player.component';
 import { SectionPlayerComponent } from './section-player/section-player.component';
-import { ProgressIndicatorsComponent } from './progress-indicators/progress-indicators.component'
-
+import { ProgressIndicatorsComponent } from './progress-indicators/progress-indicators.component';
+import { MtfComponent } from './mtf/mtf.component';
+import { MtfOptionsComponent } from './mtf/mtf-options/mtf-options.component';
+import { DragDropModule } from "@angular/cdk/drag-drop"
+import { CheckFigureDirective } from './mtf/check-figure.directive';
 @NgModule({
   declarations: [
     QumlLibraryComponent,
@@ -76,11 +79,16 @@ import { ProgressIndicatorsComponent } from './progress-indicators/progress-indi
     MainPlayerComponent,
     SectionPlayerComponent,
     ProgressIndicatorsComponent,
+    MtfComponent,
+    MtfOptionsComponent,
+    CheckFigureDirective
+    
   ],
   imports: [
     CommonModule,
     CarouselModule,
-    SunbirdPlayerSdkModule
+    SunbirdPlayerSdkModule,
+    DragDropModule
   ],
   providers: [
     QumlLibraryService,

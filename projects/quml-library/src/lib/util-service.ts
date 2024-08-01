@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash-es';
 import { DEFAULT_SCORE } from './player-constants'
-
+import { MtfOptions } from './interfaces/mtf-interface';
+import { eventName, pageId, TelemetryType, Cardinality, QuestionType } from './telemetry-constants';
 @Injectable({
     providedIn: 'root'
 })
@@ -31,6 +32,20 @@ export class UtilService {
         return key;
     }
 
+    public getSingleSelectScore(option, responseDeclaration, isShuffleQuestions, outcomeDeclaration) {
+        let key: any = this.getKeyValue(Object.keys(responseDeclaration));
+        const correctOptionValue = Number(responseDeclaration[key].correctResponse.value);
+        const selectedOptionValue = option?.value;
+        if (selectedOptionValue === correctOptionValue) {
+            if (isShuffleQuestions) {
+                return DEFAULT_SCORE;
+            }
+            return outcomeDeclaration.maxScore.defaultValue ? outcomeDeclaration.maxScore.defaultValue : DEFAULT_SCORE;
+        } else {
+            return 0;
+        }
+    }
+
     public getMultiselectScore(options, responseDeclaration, isShuffleQuestions, outcomeDeclaration) {
         let key: any = this.getKeyValue(Object.keys(responseDeclaration));
         const selectedOptionValue = options.map(option => option.value);
@@ -38,7 +53,7 @@ export class UtilService {
         let mapping = responseDeclaration[key]['mapping'];
         if (isShuffleQuestions) {
             score = DEFAULT_SCORE;
-            const scoreForEachMapping = _.round(1/mapping.length, 2);
+            const scoreForEachMapping = _.round(DEFAULT_SCORE/mapping.length, 2);
             _.forEach(mapping, (map) => {
                 map.score = scoreForEachMapping;
             })
@@ -59,9 +74,65 @@ export class UtilService {
         }
     }
 
+    public getMTFScore(rearrangedOptions: MtfOptions, responseDeclaration, isShuffleQuestions, outcomeDeclaration) {
+        let key: any = this.getKeyValue(Object.keys(responseDeclaration));
+        const correctResponse = responseDeclaration[key]['correctResponse']['value'];
+        const mapping = responseDeclaration[key]['mapping'];
+        if (isShuffleQuestions) {
+            const scoreForEachMapping = _.round(DEFAULT_SCORE / mapping.length, 2);
+            _.forEach(mapping, (map) => {
+                map.score = scoreForEachMapping;
+            });
+        }
+
+        const currentResponse = rearrangedOptions.right.map((rightItem: any) => {
+            const leftIndex = rearrangedOptions.left.findIndex((leftItem: any) => leftItem.value === rightItem.value);
+            return { left: leftIndex, right: rearrangedOptions.right.indexOf(rightItem) };
+        });
+
+        let totalScore = 0;
+        currentResponse.forEach((currentPair) => {
+            const correctPair = correctResponse.find((correct) =>
+                correct.left === currentPair.left && correct.right.includes(currentPair.right)
+            );
+            if (correctPair) {
+                const scoreMapping = mapping.find((map) =>
+                    map.value.left === currentPair.left && map.value.right === currentPair.right
+                );
+                if (scoreMapping) {
+                    totalScore += (scoreMapping?.score ? scoreMapping?.score : 0);
+                }
+            }
+        });
+        return totalScore;
+    }
+
     hasDuplicates(selectedOptions, option) {
         let duplicate = selectedOptions.find((o) => { return o.value === option.value });
         return duplicate;
+    }
+
+    getEDataItem(questionData, key) {
+        const getParams = (questionData) => {
+            const questionType = questionData.qType.toUpperCase();
+            if ((questionType === QuestionType.mcq || questionType === QuestionType.mtf) &&
+            questionData?.interactions[key]?.options) {
+                return questionData?.interactions[key].options;
+            } else {
+                return [];
+            }
+        };
+
+        const edataItem: any ={
+          'id': questionData.identifier,
+          'title': questionData.name,
+          'desc': questionData.description,
+          'type': questionData.qType.toLowerCase(),
+          'maxscore': key.length === 0 ? 0 : questionData.outcomeDeclaration.maxScore.defaultValue || 0,
+          'params': getParams(questionData)
+        };
+
+        return edataItem;
     }
 
     getQuestionType(questions, currentIndex) {

@@ -42,7 +42,10 @@ import { QuestionCursor } from '../../../quml-library/src/lib/quml-question-curs
 import { QuestionCursorImplementationService } from './question-cursor-implementation.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ProgressIndicatorsComponent } from '../../../quml-library/src/lib/progress-indicators/progress-indicators.component';
-
+import { MtfComponent } from '../../../quml-library/src/lib/mtf/mtf.component';
+import { MtfOptionsComponent } from '../../../quml-library/src/lib/mtf/mtf-options/mtf-options.component';
+import { DragDropModule } from "@angular/cdk/drag-drop"
+import { CheckFigureDirective } from '../../../quml-library/src/lib/mtf/check-figure.directive'
 @NgModule({
     declarations: [
         MainPlayerComponent,
@@ -79,14 +82,18 @@ import { ProgressIndicatorsComponent } from '../../../quml-library/src/lib/progr
         MenuComponent,
         SafeHtmlPipe,
         SectionPlayerComponent,
-        ProgressIndicatorsComponent
+        ProgressIndicatorsComponent,
+        MtfComponent,
+        MtfOptionsComponent,
+        CheckFigureDirective
     ],
     imports: [
         BrowserModule,
         CommonModule,
         CarouselModule.forRoot(),
         SunbirdPlayerSdkModule,
-        HttpClientModule
+        HttpClientModule,
+        DragDropModule
     ],
     providers: [
       { provide: QuestionCursor, useClass: QuestionCursorImplementationService },

@@ -1,0 +1,332 @@
+.main-div {
+  background: #eee;
+  display: flex;
+  width: 100%;
+  padding: 2%;
+}
+
+#leftSide {
+  flex-basis: 50%;
+}
+
+::ng-deep .main-div figure.image img,
+::ng-deep .horizontal-main figure.image img {
+  width: 120px;
+  height: 80px;
+  object-fit: contain;
+}
+
+::ng-deep .main-div figure
+{
+  margin: 0 0 0rem;
+}
+#rightSide {
+  flex-basis: 50%;
+}
+
+.horizontal-main {
+  background: #eee;
+  width: 100%;
+  padding: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+#topSide {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+#bottomSide {
+  min-height: 60px;
+  display: flex;
+  flex-direction: row;
+  margin-top: -3%;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+
+#bottomSide .cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+#bottomSide .cdk-drag-placeholder {
+  opacity: 0;
+}
+
+#bottomSide .cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+
+//ui changes
+.bubble-left {
+  margin-left: 10px;
+  padding: 50px;
+  --size: 150px;
+  position: relative;
+  width: var(--size);
+  height: calc(var(--size) * 0.66);
+  border-radius: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+  border: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
+  cursor: move;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #fff;
+  z-index: 1;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.bubble-left:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: calc(var(--size) * 0.13) solid transparent;
+  border-right-color: #fff;
+  border-left: 0;
+  margin-top: calc(var(--size) * 0.13 * -1);
+  margin-left: calc(var(--size) * 0.13 * -1);
+}
+
+.bubble-right {
+  --size: 150px;
+  padding: 50px;
+  position: relative;
+  width: var(--size);
+  height: calc(var(--size) * 0.66);
+  cursor: not-allowed;
+  border-radius: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #fff;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  clip-path: polygon(100% 0, 100% 32%, 96% 51%, 100% 72%, 100% 100%, 50% 100%, 21% 100%, 0 100%, 0 0, 41% 0);
+  z-index: 1;
+}
+
+.bubble-right:before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: calc(var(--size) * 0.13) solid transparent;
+  border-left-color: #fff;
+  border-right: 0;
+  margin-top: calc(var(--size) * 0.13 * -1);
+  margin-right: calc(var(--size) * 0.13 * -1);
+}
+
+.bubble-bottom {
+  margin: 10px;
+  --size: 200px;
+  margin-bottom: 30px;
+  position: relative;
+  width: var(--size);
+  height: calc(var(--size) * 0.66);
+  cursor: not-allowed;
+  width: var(--size);
+  height: calc(var(--size) * 0.66);
+  border-radius: 10px;
+  width: 92%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #fff;
+  z-index: 1;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  margin-bottom: 30px;
+  clip-path: polygon(50% 0%, 100% 0, 100% 100%, 61% 100%, 50% 79%, 39% 100%, 0 100%, 0 0);
+}
+
+.bubble-bottom:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: calc(var(--size) * 0.13) solid transparent;
+  border-top-color: #fff;
+  border-bottom: 0;
+  margin-left: calc(var(--size) * 0.13 * -1);
+  margin-bottom: calc(var(--size) * 0.13 * -1);
+}
+
+.bubble-top {
+  cursor: move;
+  margin: 10px;
+  --size: 200px;
+  margin-top: 2%;
+  position: relative;
+  width: var(--size);
+  height: calc(var(--size) * 0.66);
+  border-radius: 10px;
+  width: 92%;
+  margin-bottom: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #fff;
+  z-index: 1;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.bubble-top:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: calc(var(--size) * 0.13) solid transparent;
+  border-bottom-color: #fff;
+  border-top: 0;
+  margin-left: calc(var(--size) * 0.13 * -1);
+  margin-top: calc(var(--size) * 0.13 * -1);
+}
+
+.zoom-icon {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-top-left-radius: 0.5rem;
+  cursor: pointer;
+  background-color: var(--quml-color-primary-contrast);
+}
+
+.zoom-icon::after {
+  content: "";
+  position: absolute;
+  bottom: 0.125rem;
+  right: 0.125rem;
+  z-index: 1;
+  width: 1rem;
+  height: 1rem;
+  background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.com/svgjs' version='1.1' width='512' height='512' x='0' y='0' viewBox='0 0 37.166 37.166' style='enable-background:new 0 0 512 512' xml:space='preserve' class=''%3E%3Cg%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M35.829,32.045l-6.833-6.833c-0.513-0.513-1.167-0.788-1.836-0.853c2.06-2.567,3.298-5.819,3.298-9.359 c0-8.271-6.729-15-15-15c-8.271,0-15,6.729-15,15c0,8.271,6.729,15,15,15c3.121,0,6.021-0.96,8.424-2.598 c0.018,0.744,0.305,1.482,0.872,2.052l6.833,6.833c0.585,0.586,1.354,0.879,2.121,0.879s1.536-0.293,2.121-0.879 C37.001,35.116,37.001,33.217,35.829,32.045z M15.458,25c-5.514,0-10-4.484-10-10c0-5.514,4.486-10,10-10c5.514,0,10,4.486,10,10 C25.458,20.516,20.972,25,15.458,25z M22.334,15c0,1.104-0.896,2-2,2h-2.75v2.75c0,1.104-0.896,2-2,2s-2-0.896-2-2V17h-2.75 c-1.104,0-2-0.896-2-2s0.896-2,2-2h2.75v-2.75c0-1.104,0.896-2,2-2s2,0.896,2,2V13h2.75C21.438,13,22.334,13.895,22.334,15z' fill='%23ffffff' data-original='%23000000' style='' class=''/%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3Cg xmlns='http://www.w3.org/2000/svg'%3E%3C/g%3E%3C/g%3E%3C/svg%3E%0A");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.mft-modal.modal {
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+}
+
+.mft-modal.modal.modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 25px;
+  color: #fff;
+  font-size: 35px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  ::ng-deep.main-div p {
+    font-size: 12px;
+    line-height: 20px;
+    margin-bottom: 0px;
+  }
+
+  ::ng-deep.horizontal-main p {
+    font-size: 11px;
+    line-height: 16px;
+    margin-bottom: 0;
+  }
+
+  .horizontal-main {
+    padding: 0px;
+  }
+
+  .bubble-right {
+    padding: 0px;
+  }
+
+  .bubble-left {
+    padding: 0px;
+  }
+
+  .bubble-bottom {
+    margin: 10px 2px 20px;
+  }
+
+  .bubble-top {
+    margin: 2% 2px 4px;
+  }
+
+  ::ng-deep .main-div figure.image img,
+  ::ng-deep .horizontal-main figure.image img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  ::ng-deep.main-div p {
+    font-size: 16px;
+    line-height: 25px;
+    margin-bottom: 0px;
+  }
+
+  ::ng-deep.horizontal-main p {
+    font-size: 16px;
+    line-height: 25px;
+    margin-bottom: 0px;
+  }
+
+  .mft-modal .modal-content img {
+    width: 900px;
+    height: 300px;
+    object-fit: contain;
+  }
+}

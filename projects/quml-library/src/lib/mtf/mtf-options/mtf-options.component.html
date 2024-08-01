@@ -1,0 +1,49 @@
+<ng-container *ngIf="optionsShuffled && (layout === 'VERTICAL' || layout === 'DEFAULT')">
+  <div class="main-div">
+    <div id="leftSide">
+      <div *ngFor="let option of shuffledOptions.left" class="bubble-right">
+        <div [innerHTML]="option.label" appCheckFigure></div>
+        <div class="zoom-icon" (click)="openModal($event)"></div>
+      </div>
+    </div>
+    <div id="rightSide" cdkDropList (cdkDropListDropped)="onDrop($event)">
+      <div *ngFor="let option of shuffledOptions.right; let i = index" class="bubble-left" cdkDrag
+        [cdkDragData]="option" cdkDragBoundary="#rightSide">
+        <div [innerHTML]="option.label" appCheckFigure></div>
+        <div class="zoom-icon" (click)="openModal($event)"></div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="mft-modal modal" *ngIf="isModalVisible">
+      <div class="modal-content">
+        <span class="modal-close" (click)="closeModal()">&times;</span>
+        <img [src]="selectedImageSrc" />
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="optionsShuffled && layout === 'HORIZONTAL'">
+  <div class="horizontal-main">
+    <div id="topSide">
+      <div *ngFor="let option of shuffledOptions.left; let i = index" class="bubble-bottom">
+        <div [innerHTML]="option.label" appCheckFigure></div>
+        <div class="zoom-icon" (click)="openModal($event)"></div>
+      </div>
+    </div>
+    <div id="bottomSide" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="onDrop($event)">
+      <div *ngFor="let option of shuffledOptions.right; let i = index" class="bubble-top" [cdkDragData]="option"
+        cdkDrag>
+        <div [innerHTML]="option.label" cdkDragBoundary="#bottomSide" appCheckFigure></div>
+        <div class="zoom-icon" (click)="openModal($event)"></div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="mft-modal modal" *ngIf="isModalVisible">
+      <div class="modal-content">
+        <span class="modal-close" (click)="closeModal()">&times;</span>
+        <img [src]="selectedImageSrc" />
+      </div>
+    </div>
+  </div>
+</ng-container>
